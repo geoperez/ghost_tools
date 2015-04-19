@@ -6,9 +6,13 @@ var rl = readline.createInterface({
   output: process.stdout
 });
 
+function binaryParser(res, callback) { // todo: complete 
+}
+
 rl.question("Blog URL: ", function(url) {
 	rl.question("Email: ", function(email) {
 		rl.question("Password: ", function(password) {
+	// todo: change to all posts
 	request.post(url + '/ghost/api/v0.1/authentication/token/')
             .send({grant_type: 'password', username: email, password: password, client_id: 'ghost-admin'})
             .end(function (err, res) {
@@ -25,7 +29,16 @@ rl.question("Blog URL: ", function(url) {
 						console.log('ERROR');
 						console.log(dErr);
 					} else {
-						console.log(dRes.body);
+						var data = dRes.body.posts;
+						
+						for (var d in data) {
+							console.log(data[d].title);
+								
+							var imgUrl = data[d].image;
+							request.get(url + imgUrl).parse(binaryParser).end(functio(iErr, iRes) {
+								// TODO: Save buffer
+							});
+						}
 					}
 				});
 		}

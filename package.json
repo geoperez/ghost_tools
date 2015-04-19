@@ -1,0 +1,26 @@
+{
+  "name": "ghost_tools",
+  "version": "0.0.1",
+  "description": "Ghost tool to backup images and content",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo HOLA"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geoperez/ghost_tools.git"
+  },
+  "keywords": [
+    "ghost",
+    "backup"
+  ],
+  "author": "Geo Perez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/geoperez/ghost_tools/issues"
+  },
+  "homepage": "https://github.com/geoperez/ghost_tools",
+  "dependencies": {
+    "superagent": "^1.2.0"
+  }
+}

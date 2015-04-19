@@ -17,8 +17,17 @@ rl.question("Blog URL: ", function(url) {
                     console.log(err);
                 }
 		else {
-		console.log(res.body);
-		console.log(res.body.access_token);
+		var token = res.body.access_token;
+			request.get(url + '/ghost/api/v0.1/posts')
+				.set('Authorization', 'bearer ' + token)
+				.end(function (dErr, dRes) {
+					if (dErr) {
+						console.log('ERROR');
+						console.log(dErr);
+					} else {
+						console.log(dRes.body);
+					}
+				});
 		}
 		rl.close();
             });

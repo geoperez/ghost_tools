@@ -22,6 +22,7 @@
   "homepage": "https://github.com/geoperez/ghost_tools",
   "dependencies": {
     "readline": "0.0.7",
-    "superagent": "^1.2.0"
+    "superagent": "^1.2.0",
+    "wget": "0.0.1"
   }
 }

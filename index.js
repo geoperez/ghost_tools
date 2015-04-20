@@ -1,6 +1,6 @@
 var request = require('superagent');
 var readline = require('readline');
-var fs = require('fs');
+var wget = require('wget');
 var path = require('path');
 
 var rl = readline.createInterface({
@@ -20,32 +20,28 @@ function binaryParser(res, callback) {
 function saveFile(url, imgUrl) {
     // TODO: Check it is internal img
     url = url.replace('https', 'http'); // I don't know why
+    var imgPath = path.basename(imgUrl);
+    var src = url + imgUrl;
 
-    request.get(url + imgUrl)
-        .buffer(true)
-        .parse(binaryParser)
-        .end(function (iErr, iRes) {
-            if (iErr) {
-                console.log("ERROR");
-                console.log(iErr);
+    request.get(src).end(function (iErr, iRes) {
+        if (iErr) {
+            console.log("ERROR");
+            console.log(iErr);
+        } else {
+            if (iRes.redirects.length > 0) {
+                src = iRes.redirects[0];
+                var download = wget.download(src, imgPath, {});
+                download.on('error', function (err) {
+                    console.log(err);
+                });
+                download.on('end', function (output) {
+                    console.log(output);
+                });
             } else {
-                if (iRes.redirects.length > 0) {
-                    var newImgUrl = path.basename(iRes.redirects[0]);
-                    saveFile(iRes.redirects[0].replace(newImgUrl, ''), newImgUrl);
-                } else {
-                    console.log(iRes.data);
-                    var buffer = new Buffer(iRes.data, 'binary');
-
-                    if (Buffer.isBuffer(buffer)) {
-                        var imgPath = path.basename(imgUrl);
-                        console.log("File ready to write: " + imgPath);
-                        fs.writeFileSync(imgPath, iRes.body);
-                    } else {
-                        console.log("ALGO NO TIENE SENTIDO", iRes);
-                    }
-                }
+                console.log("NOTHING HERE");
             }
-        });
+        }
+    });
 }
 
 rl.question("Blog URL: ", function(url) {

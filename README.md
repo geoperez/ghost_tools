@@ -10,3 +10,10 @@ node index.js
 </pre>
 
 You will need to enter your blog domain (if you use **GhostPro** use the ghost.io domain), email address and password. A content folder will be created with all the images in your account.
+
+## ToDo
+
+* Backup Markdown files
+* Backup tags images (??)
+* Backup databases
+* Allow to choose what to backup

@@ -4,7 +4,7 @@
   "description": "Ghost tool to backup images and content",
   "main": "index.js",
   "scripts": {
-    "test": "echo HOLA"
+    "backup": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/geoperez/ghost_tools",
   "dependencies": {
+    "ensureDir": "^1.0.6",
     "readline": "0.0.7",
     "superagent": "^1.2.0",
     "wget": "0.0.1"

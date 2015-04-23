@@ -2,9 +2,12 @@ var request = require('superagent');
 var readline = require('readline');
 var wget = require('wget');
 var path = require('path');
+var fs = require('fs');
 var ensureDir = require('ensureDir');
+//var process = require('process');
 
 var imgMatchRegex = /(!\[.*?\]\()(.+?)(\))/g;
+var markdownPath = path.join('.', 'markdown');
 
 var rl = readline.createInterface({
   input: process.stdin,
@@ -46,44 +49,60 @@ function saveFile(url, imgUrl) {
     });
 }
 
-rl.question("Blog URL: ", function(url) {
-    rl.question("Email: ", function(email) {
-        rl.question("Password: ", function(password) {
-            request.post(url + '/ghost/api/v0.1/authentication/token/')
-                    .send({grant_type: 'password', username: email, password: password, client_id: 'ghost-admin'})
-                    .end(function (err, res) {
-                        if (err) {
-                            console.log("ERROR");
-                            console.log(err);
-                        }
-                        else {
-                            request.get(url + '/ghost/api/v0.1/posts?limit=all')
-                                .set('Authorization', 'bearer ' + res.body.access_token)
-                                .end(function (dErr, dRes) {
-                                    if (dErr) {
-                                        console.log('ERROR');
-                                        console.log(dErr);
-                                    } else {
-                                        var data = dRes.body.posts;
+function askPasswordAndContinue(url, email) {
+    rl.question("Password: ", function(password) {
+        request.post(url + '/ghost/api/v0.1/authentication/token/')
+            .send({ grant_type: 'password', username: email, password: password, client_id: 'ghost-admin' })
+            .end(function(err, res) {
+                if (err) {
+                    console.log("ERROR");
+                    console.log(err);
+                } else {
+                    request.get(url + '/ghost/api/v0.1/posts?limit=all')
+                        .set('Authorization', 'bearer ' + res.body.access_token)
+                        .end(function(dErr, dRes) {
+                            if (dErr) {
+                                console.log('ERROR');
+                                console.log(dErr);
+                            } else {
+                                var data = dRes.body.posts;
 
-                                        for (var d in data) {
-                                            // SEO image
-                                            var imgUrl = data[d].image;
-                                            saveFile(url, imgUrl);
+                                for (var d in data) {
+                                    // Save Markdown
+                                    fs.writeFile(path.join(markdownPath, data[d].slug + ".md"), data[d].markdown, function(fileErr) {
+                                        if (fileErr) console.log(fileErr);
+                                    });
 
-                                            // Discover all images in post, saving only from the same server
-                                            var markdown = data[d].markdown;
-                                            var match;
-                                            while (match = imgMatchRegex.exec(markdown)) {
-                                                if (match[2][0] == '/') saveFile(url, match[2]);
-                                            }
-                                        }
+                                    // SEO image
+                                    var imgUrl = data[d].image;
+                                    saveFile(url, imgUrl);
+
+                                    // Discover all images in post, saving only from the same server
+                                    var match;
+                                    while (match = imgMatchRegex.exec(data[d].markdown)) {
+                                        if (match[2][0] == '/') saveFile(url, match[2]);
                                     }
-                                });
-                        }
-
-                        rl.close();
-                    });
-        });
+                                }
+                            }
+                        });
+                }
+                rl.close();
+            });
     });
+}
+
+ensureDir(markdownPath, 0755, function(dirErr) {
+    if (dirErr) {
+        console.log(dirErr);
+    } else {
+        if (process.argv.length == 4) {
+            askPasswordAndContinue(process.argv[2], process.argv[3]);
+        } else {
+            rl.question("Blog URL: ", function(url) {
+                rl.question("Email: ", function(email) {
+                    askPasswordAndContinue(url, email);
+                });
+            });
+        }
+    }
 });

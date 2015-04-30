@@ -1,4 +1,4 @@
-# ghost_tools
+# ghost_tools [![npm version](https://badge.fury.io/js/ghost_tools.svg)](http://badge.fury.io/js/ghost_tools)
 
 Ghost tools to backup content using [Ghost API Authentication](https://github.com/TryGhost/Ghost/wiki/How-does-oAuth-work-with-Ghost%3F). The Ghost API is WIP, so this script could be obsolete any momemnt.
 

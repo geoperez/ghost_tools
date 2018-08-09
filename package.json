@@ -23,7 +23,7 @@
   "dependencies": {
     "ensureDir": "^1.0.6",
     "inquirer": "^0.8.2",
-    "superagent": "^1.2.0",
+    "superagent": "3.8.3",
     "wget": "0.0.1"
   }
 }
